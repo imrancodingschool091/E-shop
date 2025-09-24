@@ -1,38 +1,66 @@
-// import Stripe from "stripe";
-// import { Order } from "../models/order.model.js";
-// import { asyncHandler } from "../middlewares/asyncHandler.js";
+import Stripe from "stripe";
+import { Order } from "../models/order.model.js";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// const stripe=new Stripe(process.env.STRIPE_SECRET_KEY);
+// ✅ Create Payment Intent
+export const createPaymentIntent = asyncHandler(async (req, res) => {
+  const { orderId } = req.body;
+  const order = await Order.findById(orderId);
 
-// export const createPaymentIntent=asyncHandler(async(req,res)=>{
-//     const {orderId}=req.body;
+  if (!order) {
+    return res.status(404).json({ success: false, message: "Order not found" });
+  }
 
-//     const order=await Order.findById(orderId);
+  // Stripe amount must be an integer (in paise for INR)
+  const amount = Math.round(order.totalPrice * 100);
 
-//     if(!order) return res.status(400).json({success:false, message:"order not found"});
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount,
+    currency: "inr",
+    metadata: { orderId: order._id.toString() },
+  });
 
+  order.payment.paymentIntentId = paymentIntent.id;
+  order.payment.amount = amount / 100; // store in INR
+  order.payment.currency = "inr";
+  await order.save();
 
-//     const amount= Math.round(order.totalPrice*100);
+  res.json({
+    success: true,
+    clientSecret: paymentIntent.client_secret,
+  });
+});
 
-//     const paymentIntent=stripe.paymentIntents.create({
-//         amount,
-//         currency:"inr",
-//         metadata:{orderId:order._id.toString()}
-//     });
-    
-//     order.payment.paymentIntentId=paymentIntent._id,
-//     order.payment.amount=amount/100,
-//     order.payment.currency="inr"
+// ✅ Stripe Webhook
+export const stripeWebhook = asyncHandler(async (req, res) => {
+  const sig = req.headers["stripe-signature"];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-//     await order.save();
+  let event;
 
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (error) {
+    console.error("Webhook signature verification failed:", error.message);
+    return res.status(400).send(`Webhook Error: ${error.message}`);
+  }
 
+  if (event.type === "payment_intent.succeeded") {
+    const pi = event.data.object;
+    const orderId = pi.metadata?.orderId;
 
-//     res.json({success:true,clientSecret:(await paymentIntent).client_secret})
+    if (orderId) {
+      const order = await Order.findById(orderId);
+      if (order) {
+        order.status = "processing";
+        order.payment.status = "succeeded";
+        await order.save();
+      }
+    }
+  }
 
-
-// })
-
-
-
+  // ✅ Send response to Stripe
+  res.json({ received: true });
+});

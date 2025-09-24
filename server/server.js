@@ -7,7 +7,7 @@ import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.route.js"
 import cartRoutes from "./routes/cart.routes.js";
 import orderRoutes from "./routes/order.routes.js"
-
+import paymentRoutes from "./routes/payment.routes.js"
 dotenv.config();
 const app = express();
 
@@ -28,7 +28,8 @@ app.get("/",(req,res)=>{
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart",cartRoutes);
-app.use("/api/order",orderRoutes)
+app.use("/api/order",orderRoutes);
+app.use("/api/payments",paymentRoutes)
 
 mongoose.connect(process.env.MONGO_URI).then(() => {
   app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
