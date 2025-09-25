@@ -10,14 +10,14 @@ function Profile() {
     (state) => state.auth
   );
 
-  console.log("User",user)
-
+  // Fetch profile when authenticated but no user data
   useEffect(() => {
     if (isAuthenticated && !user) {
       dispatch(getProfile());
     }
   }, [dispatch, isAuthenticated, user]);
 
+  // Clear errors on mount
   useEffect(() => {
     dispatch(clearError());
   }, [dispatch]);
@@ -26,18 +26,14 @@ function Profile() {
     try {
       await dispatch(logoutUser()).unwrap();
       navigate("/login");
-    } catch (error) {
+    } catch (err) {
       navigate("/login");
     }
   };
 
-  // --- Conditional Rendering for different states ---
-  
-  if (!isAuthenticated) {
-    navigate("/login");
-    return null;
-  }
+  // --- Conditional Rendering ---
 
+  // Show loading while fetching
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -51,6 +47,13 @@ function Profile() {
     );
   }
 
+  // Redirect only if NOT authenticated
+  if (!isAuthenticated && !isLoading) {
+    navigate("/login");
+    return null;
+  }
+
+  // Show error if exists
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
@@ -77,6 +80,9 @@ function Profile() {
     );
   }
 
+  console.log("User:",user)
+
+  // Render user data
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="max-w-md w-full p-8 bg-white shadow-lg rounded-xl">
@@ -86,18 +92,18 @@ function Profile() {
         <div className="space-y-4">
           <div>
             <span className="font-semibold text-gray-700">Username: </span>
-            <span className="text-gray-900">{user?.username}</span>
+            <span className="text-gray-900">{user?.user.username || "N/A"}</span>
           </div>
           <div>
             <span className="font-semibold text-gray-700">Email: </span>
-            <span className="text-gray-900">{user?.email}</span>
+            <span className="text-gray-900">{user?.user.email || "N/A"}</span>
           </div>
           <div>
             <span className="font-semibold text-gray-700">User ID: </span>
-            <span className="text-gray-900 break-all">{user?._id}</span>
+            <span className="text-gray-900 break-all">{user.user._id || "N/A"}</span>
           </div>
         </div>
-        
+
         <button
           onClick={handleLogout}
           className="w-full mt-8 px-4 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition"

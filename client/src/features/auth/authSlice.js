@@ -67,7 +67,7 @@ export const refreshToken = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "https://e-shop-2-ipk0.onrender.com/api/auth/refresh",
+        "https://e-shop-1-hemj.onrender.com/api/auth/refresh",
         {},
         { withCredentials: true }
       );

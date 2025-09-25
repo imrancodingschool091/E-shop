@@ -11,6 +11,7 @@ function Cart() {
     (state) => state.cart
   );
 
+  console.log("CartItem:",cartItems)
   
   useEffect(() => {
     dispatch(getCart());

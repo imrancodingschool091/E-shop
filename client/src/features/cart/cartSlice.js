@@ -17,7 +17,7 @@ export const addToCart = createAsyncThunk(
 // 🛒 Get Cart
 export const getCart = createAsyncThunk("cart/getCart", async (_, thunkAPI) => {
   try {
-    const res = await axiosInstance.get("/cart");
+    const res = await axiosInstance.get("/cart/");
     return res.data.cart;
   } catch (err) {
     return thunkAPI.rejectWithValue(err?.response?.data?.message || "Failed to get cart");
