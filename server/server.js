@@ -16,7 +16,7 @@ const app = express();
 
 // ✅ CORS config
 app.use(cors({
-  origin: process.env.CLIENT_URL || "https://e-shop-mauve-nine.vercel.app",
+  origin: process.env.CLIENT_URL || "https://e-shop-6nor.vercel.app",
   credentials: true, // cookies allow karne ke liye
 }));
 
