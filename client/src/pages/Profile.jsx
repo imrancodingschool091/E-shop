@@ -10,6 +10,8 @@ function Profile() {
     (state) => state.auth
   );
 
+  console.log("User",user)
+
   useEffect(() => {
     if (isAuthenticated && !user) {
       dispatch(getProfile());
