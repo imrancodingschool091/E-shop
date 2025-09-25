@@ -9,7 +9,7 @@ export const setAccessToken = (token) => {
 export const getAccessToken = () => accessToken;
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://e-shop-1-hemj.onrender.com/api",
   withCredentials: true,
 });
 
@@ -29,21 +29,22 @@ axiosInstance.interceptors.response.use(
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      
+
       try {
         const { data } = await axios.post(
-          "http://localhost:5000/api/auth/refresh",
+          "https://e-shop-1-hemj.onrender.com/api/auth/refresh",
           {},
           { withCredentials: true }
         );
-        
+
         setAccessToken(data.accessToken);
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         setAccessToken(null);
-        // Redirect to login
+        // Clear any stored user data and redirect to login
         if (typeof window !== 'undefined') {
+          localStorage.removeItem('persist:auth'); // If using redux-persist
           window.location.href = "/login";
         }
         return Promise.reject(refreshError);

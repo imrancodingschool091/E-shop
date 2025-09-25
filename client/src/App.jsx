@@ -21,7 +21,7 @@ import Checkout from "./pages/Checkout";
 function App() {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
-
+ console.log("IsAuthnticated",isAuthenticated)
   // Silent refresh on app load
   useEffect(() => {
     const initializeAuth = async () => {
