@@ -3,34 +3,47 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+
 import authRoutes from "./routes/auth.routes.js";
-import productRoutes from "./routes/product.route.js"
+import productRoutes from "./routes/product.route.js";
 import cartRoutes from "./routes/cart.routes.js";
-import orderRoutes from "./routes/order.routes.js"
-import paymentRoutes from "./routes/payment.routes.js"
+import orderRoutes from "./routes/order.routes.js";
+import paymentRoutes from "./routes/payment.routes.js";
+
 dotenv.config();
+
 const app = express();
 
-
-app.use(express.json());
-app.use(cookieParser());
-app.use(express.urlencoded({extended:true}))
-
+// ✅ CORS config
 app.use(cors({
-  origin: process.env.CLIENT_URL,
-  credentials: true,
+  origin: process.env.CLIENT_URL || "https://e-shop-mauve-nine.vercel.app",
+  credentials: true, // cookies allow karne ke liye
 }));
 
+// ✅ Middlewares
+app.use(express.json());
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
-app.get("/",(req,res)=>{
-   res.send("hi there")
-})
+// ✅ Routes
+app.get("/", (req, res) => {
+  res.send("hi there 👋 server is running");
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
-app.use("/api/cart",cartRoutes);
-app.use("/api/order",orderRoutes);
-app.use("/api/payments",paymentRoutes)
+app.use("/api/cart", cartRoutes);
+app.use("/api/order", orderRoutes);
+app.use("/api/payments", paymentRoutes);
 
-mongoose.connect(process.env.MONGO_URI).then(() => {
-  app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
-});
+// ✅ Database + Server
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () =>
+      console.log(`🚀 Server running on port ${PORT}`)
+    );
+  })
+  .catch((err) => {
+    console.error("❌ DB connection failed:", err.message);
+  });
