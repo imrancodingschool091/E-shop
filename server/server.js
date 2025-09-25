@@ -16,7 +16,7 @@ const app = express();
 
 // ✅ CORS config
 app.use(cors({
-  origin: process.env.CLIENT_URL || "https://e-shop-6nor-k6t84jpyo-xyz4.vercel.app",
+  origin: process.env.CLIENT_URL || "https://e-shop-iota-snowy.vercel.app",
   credentials: true, // cookies allow karne ke liye
 }));
 
