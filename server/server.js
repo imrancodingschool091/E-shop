@@ -14,30 +14,10 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Allowed origins
-const allowedOrigins = [
-  "http://localhost:5173", // React local dev
-  "https://your-frontend.vercel.app" // Vercel deployed frontend
-];
-
 // ✅ CORS config
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true, // cookies + auth headers allow
-  })
-);
-
-// ✅ Preflight requests (OPTIONS)
-app.options("*", cors({
-  origin: allowedOrigins,
-  credentials: true,
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true, // cookies allow karne ke liye
 }));
 
 // ✅ Middlewares
