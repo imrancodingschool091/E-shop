@@ -9,7 +9,7 @@ export const setAccessToken = (token) => {
 export const getAccessToken = () => accessToken;
 
 const axiosInstance = axios.create({
-  baseURL: "https://e-shop-1-hemj.onrender.com/api",
+  baseURL: "https://e-shop-3-8iin.onrender.com/api",
   withCredentials: true,
 });
 
@@ -32,7 +32,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         const { data } = await axios.post(
-          "https://e-shop-1-hemj.onrender.com/api/auth/refresh",
+          "https://e-shop-3-8iin.onrender.com/api/auth/refresh",
           {},
           { withCredentials: true }
         );
