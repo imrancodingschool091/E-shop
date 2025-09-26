@@ -80,7 +80,6 @@ function Profile() {
     );
   }
 
-  console.log("User:",user)
 
   // Render user data
   return (
